@@ -1,11 +1,5 @@
-"""undoManager.py -- An experimental proposal to implement an undo/redo
-mechanism on top of existing objects.
-
-This is inspired by Raph Levien's ideas, as he wrote them down here:
-
-- https://github.com/trufont/trufont/pull/614#issuecomment-446309637
-
-It also draws inspiration from jsonpatch: http://jsonpatch.com/
+"""undoManager.py -- A proposal to implement an undo/redo mechanism on top of
+existing objects.
 
 The main idea is that if one limits oneself to objects that can be viewed as
 JSON-like data structures (ie. are composed of strings, numbers, lists and
@@ -23,22 +17,6 @@ undo manager.
 
 The undo manager collects change deltas (and their inverses), and can apply
 them to the original model object when undo or redo is requested.
-
-A change delta is an object with three fields:
-
-- op: the operation to be performed. One of "add", "replace" or "remove"
-- path: a path identifying a child object in the model object tree
-- value: the value to add or replace, or None when removing the child
-
-The path object is a tuple containing path elements. A path element is either a
-string (a key or an attribute name) or an integer (a sequence index). An empty
-path represents the root object.
-
-Examples:
-- ("a",) represents the key "a" if the root object is a dictionary, or the
-  attribute "a" if it is a non-container object.
-- (3,) represents the item with index 3 for a sequence root element
-- (3, "a") represents 123 in this object: [2, 4, 8, {"a": 123}]
 
 The UndoManager class keeps a root object. Client code wishing to modify the
 object uses a proxy object that the UndoManager provides:
@@ -74,7 +52,17 @@ demo code at the end of this module for a more elaborate example.
 
 The undo/redo system implemented here does not support arbitrary model objects
 out of the box, but custom proxy classes can be registered via the
-UndoProxy.register() function.
+registerUndoProxy() function.
+
+Acknowledgments:
+
+The approach implemented here is inspired by Raph Levien's ideas, as he wrote
+them down here:
+- https://github.com/trufont/trufont/pull/614#issuecomment-446309637
+
+It also draws inspiration from jsonpatch: http://jsonpatch.com/
+
+
 """
 
 from collections.abc import Callable, Mapping, MutableMapping, Sequence, \
@@ -312,8 +300,26 @@ class ChangeSetContextManager:
 
 # Change Classes
 
+
 @dataclass(frozen=True)
 class Change:
+
+    """A Change delta is an object with three fields:
+
+    - op: the operation to be performed. One of "add", "replace" or "remove"
+    - path: a path identifying a child object in the model object tree
+    - value: the value to add or replace, or None when removing the child
+
+    The path object is a tuple containing path elements. A path element is either a
+    string (a key or an attribute name) or an integer (a sequence index). An empty
+    path represents the root object.
+
+    Examples:
+    - ("a",) represents the key "a" if the root object is a dictionary, or the
+      attribute "a" if it is a non-container object.
+    - (3,) represents the item with index 3 for a sequence root element
+    - (3, "a") represents 123 in this object: [2, 4, 8, {"a": 123}]
+    """
 
     op: str
     path: tuple  # path elements are str or int
