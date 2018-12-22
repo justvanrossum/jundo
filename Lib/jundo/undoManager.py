@@ -70,7 +70,7 @@ class UndoManager:
     object type that uses attributes to query and manipulate its data.
 
     For object types that do not fit this mold, a custom proxy class can be
-    registered via the UndoProxy.register() function.
+    registered via the registerUndoProxy() function.
     """
 
     def __init__(self):
