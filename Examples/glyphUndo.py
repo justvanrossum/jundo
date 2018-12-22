@@ -9,6 +9,7 @@ class Point:
     type: str = "line"
     smooth: bool = False
 
+
 @dataclass
 class Glyph:
     width: float = 0
@@ -20,12 +21,14 @@ class Glyph:
                 pen.addPoint((pt.x, pt.y), pt.type, pt.smooth)
             pen.endPath()
 
+
 def drawGlyph(g):
     # needs DrawBot
     bez = BezierPath()
     g.drawPoints(bez)
     drawPath(bez)
     translate(g.width, 0)
+
 
 modelGlyph = Glyph(width=200)
 um = UndoManager()
