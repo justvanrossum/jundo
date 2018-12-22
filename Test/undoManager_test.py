@@ -414,6 +414,18 @@ def test_set_insert():
     assert model == [1, {1, 2, 3}, 3, 4]
 
 
+def test_set_add_discard():
+    model = {1, 3, 5, 7}
+    um = UndoManager()
+    proxy = um.setModel(model)
+    with um.changeSet(title="add existing value"):
+        model.add(3)  # already there
+    assert len(um.undoStack) == 0
+    with um.changeSet(title="remove non-existing value"):
+        model.discard(2)
+    assert len(um.undoStack) == 0
+
+
 def test_callable():
     model = _AttributeObject()
     um = UndoManager()
