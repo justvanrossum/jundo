@@ -424,6 +424,10 @@ def test_set_add_discard():
     with um.changeSet(title="remove non-existing value"):
         proxy.discard(2)
     assert len(um.undoStack) == 0
+    with um.changeSet(title="remove non-existing value"):
+        with pytest.raises(KeyError):
+            proxy.remove(2)
+    assert len(um.undoStack) == 0
 
 
 def test_callable():
