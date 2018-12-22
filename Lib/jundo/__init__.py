@@ -48,10 +48,10 @@ example:
     >>> model[3]["a"]
     123
 
-In this example only Python list and dict objects are used as containers, but
+In this example, only Python list and dict objects are used as containers, but
 any type of Mapping or Sequence (in the collections.abc-sense) can be used, or
 any object type that uses attribute access to modify its model data. See the
-source code for a more elaborate example.
+source code for a more elaborate example. Sets are also supported.
 
 To support model objects that are not JSON-like, custom proxy classes can be
 registered via the `registerUndoProxy()` function. 
