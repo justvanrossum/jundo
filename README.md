@@ -54,9 +54,8 @@ source code for a more elaborate example.
 To support model objects that are not JSON-like, custom proxy classes can be
 registered via the `registerUndoProxy()` function. 
 
-Acknowledgments:
+### Acknowledgments
 
 The approach implemented here is inspired by Raph Levien's ideas, as he wrote
 them down [here](https://github.com/trufont/trufont/pull/614#issuecomment-446309637).
-
 It also draws inspiration from [jsonpatch](http://jsonpatch.com/).
