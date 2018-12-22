@@ -65,4 +65,6 @@ It also draws inspiration from [jsonpatch](http://jsonpatch.com/).
 
 from .undoManager import UndoManager
 
+__all__ = ["UndoManager"]
+
 __version__ = "0.1"  # see also setup.py
