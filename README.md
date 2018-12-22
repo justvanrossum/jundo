@@ -19,8 +19,10 @@ undo manager.
 The undo manager collects change deltas (and their inverses), and can apply
 them to the original model object when undo or redo is requested.
 
-The UndoManager class keeps a root object. Client code wishing to modify the
-object uses a proxy object that the UndoManager provides:
+The model object is passed to the undo manager with the
+`undoManager.setModel(model)`, which returns a proxy for the model. Client code
+must use the proxy object instead of the model to modify the model. Here is an
+example:
 
     >>> model = [1, 2, 3, {"a": 123}]
     >>> um = UndoManager()
