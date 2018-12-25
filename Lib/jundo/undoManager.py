@@ -281,11 +281,14 @@ class ChangeSet:
 
     changes: list = field(default_factory=list)
 
+    def __iter__(self):
+        return iter(self.changes)
+
     def addChange(self, change):
         self.changes.append(change)
 
     def applyChanges(self, model):
-        for change in self.changes:
+        for change in self:
             change.applyChange(model)
 
     def isEmpty(self):
@@ -294,9 +297,8 @@ class ChangeSet:
 
 class InverseChangeSet(ChangeSet):
 
-    def applyChanges(self, model):
-        for change in reversed(self.changes):
-            change.applyChange(model)
+    def __iter__(self):
+        return reversed(self.changes)
 
 
 # Proxy classes
