@@ -129,11 +129,14 @@ class UndoManager:
         with a undoManager.newChangeSet() call.
         """
         assert self._currentChanges is not None
-        if not self._currentChanges[1].isEmpty():
-            self.undoStack.append(self._currentChanges)
-            self.redoStack = []
+        info, currentChangeSet, currentInverseChangeSet = self._currentChanges
         self._currentChanges = None
-        # TODO: a non-continuous changes monitoring hook should be triggered here
+        if not currentChangeSet.isEmpty():
+            self.undoStack.append((info, currentChangeSet, currentInverseChangeSet))
+            self.redoStack = []
+            # TODO: a non-continuous changes monitoring hook should be triggered here
+        else:
+            assert currentInverseChangeSet.isEmpty()
 
     def rollbackCurrentChangeSet(self):
         """Roll back the current changes to the model, and discard the current
