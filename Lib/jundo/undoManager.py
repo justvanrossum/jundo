@@ -71,6 +71,12 @@ class UndoManager:
 
     For object types that do not fit this mold, a custom proxy class can be
     registered via the registerUndoProxy() function.
+
+    UndoManager() has an optional argument called `changeMonitor`, which should
+    be a callable taking one positional argument. It will be called for every
+    change set that is recorded or performed via `um.undo()` or `um.redo()`,
+    with the change set as the argument. This mechanism can be used to trigger
+    view updates in a GUI application.
     """
 
     def __init__(self, changeMonitor=None):
