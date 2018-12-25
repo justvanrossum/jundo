@@ -355,6 +355,23 @@ class TestDictionary:
         um.redo()
         assert model["a"] == 14
 
+    def test_dictionary_non_str_keys(self):
+        model = {}
+        um = UndoManager()
+        proxy = um.setModel(model)
+        with um.changeSet(title="dict test"):
+            proxy[1.5] = 12
+            proxy[10] = 120
+            proxy[("T", "o")] = -30
+        um.undo()
+        assert 1.5 not in model
+        assert 10 not in model
+        assert ("T", "o") not in model
+        um.redo()
+        assert model[1.5] == 12
+        assert model[10] == 120
+        assert model[("T", "o")] == -30
+
 
 class TestAttributes:
 
