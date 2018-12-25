@@ -324,7 +324,6 @@ class UndoProxyContainerBase(UndoProxyBase):
             invChange = Change("replace", path, oldValue)
             setter = self.modelReplaceItem
         else:
-            assert not isinstance(key, int), "bad call for seq __setitem__"
             change = Change("add", path, value)
             invChange = Change("remove", path, None)
             setter = self.modelAddItem
