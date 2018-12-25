@@ -371,6 +371,13 @@ class TestDictionary:
         assert model[1.5] == 12
         assert model[10] == 120
         assert model[("T", "o")] == -30
+        with um.changeSet(title="dict test"):
+            del proxy[1.5]
+            del proxy[10]
+            del proxy[("T", "o")]
+        assert 1.5 not in model
+        assert 10 not in model
+        assert ("T", "o") not in model
 
 
 class TestAttributes:
