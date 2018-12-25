@@ -73,11 +73,12 @@ class UndoManager:
     registered via the registerUndoProxy() function.
     """
 
-    def __init__(self):
+    def __init__(self, changeMonitor=None):
         self.undoStack = []
         self.redoStack = []
         self._currentChanges = None  # (info, currentChangeSet, currentInverseChangeSet)
         self._modelObject = None
+        self._changeMonitor = changeMonitor
 
     def setModel(self, model):
         """Set the model object for the undo manager and return a proxy for
@@ -134,7 +135,8 @@ class UndoManager:
         if not currentChangeSet.isEmpty():
             self.undoStack.append((info, currentChangeSet, currentInverseChangeSet))
             self.redoStack = []
-            # TODO: a non-continuous changes monitoring hook should be triggered here
+            if self._changeMonitor is not None:
+                self._changeMonitor(currentChangeSet)
         else:
             assert currentInverseChangeSet.isEmpty()
 
@@ -214,8 +216,9 @@ class UndoManager:
         info, changeSet, invChangeSet = popStack.pop()
         invChangeSet.applyChanges(self._modelObject)
         pushStack.append((info, invChangeSet, changeSet))
-        # TODO: a continuous changes monitoring hook should be triggered here
-        # TODO: a non-continuous changes monitoring hook should be triggered here
+        if self._changeMonitor is not None:
+            self._changeMonitor(invChangeSet)
+        # TODO: a continuous changes monitoring hook should also be triggered here
 
 
 @dataclass

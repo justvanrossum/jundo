@@ -132,6 +132,61 @@ class TestUndoManager:
         with pytest.raises(AssertionError):
             proxy = um.setModel({})
 
+    def test_change_monitor(self):
+        changes = []
+        def changeMonitor(change):
+            changes.append(change)
+        um = UndoManager(changeMonitor=changeMonitor)
+        proxy = um.setModel({})
+        with um.changeSet():
+            proxy["a"] = 1
+            proxy["b"] = 2
+            proxy["c"] = [3, 4, 5]
+        assert len(changes) == 1
+        changeSet = changes[-1]
+        expectedChanges = [
+            Change(op='add', path=('a',), value=1),
+            Change(op='add', path=('b',), value=2),
+            Change(op='add', path=('c',), value=[3, 4, 5]),
+        ]
+        assert list(changeSet) == expectedChanges
+        with um.changeSet():
+            proxy["c"][2] = {}
+            proxy["c"][2]["x"] = "abc"
+        assert len(changes) == 2
+        changeSet = changes[-1]
+        expectedChanges = [
+            Change(op='replace', path=('c', 2), value={'x': 'abc'}),  # odd but expected: mutable value on stack
+            Change(op='add', path=('c', 2, 'x'), value='abc'),
+        ]
+        assert list(changeSet) == expectedChanges
+        um.undo()
+        assert len(changes) == 3
+        changeSet = changes[-1]
+        expectedChanges = [
+            Change(op='remove', path=('c', 2, 'x'), value=None),
+            Change(op='replace', path=('c', 2), value=5),
+        ]
+        assert list(changeSet) == expectedChanges
+        um.undo()
+        assert len(changes) == 4
+        changeSet = changes[-1]
+        expectedChanges = [
+            Change(op='remove', path=('c',), value=None),
+            Change(op='remove', path=('b',), value=None),
+            Change(op='remove', path=('a',), value=None),
+        ]
+        assert list(changeSet) == expectedChanges
+        um.redo()
+        assert len(changes) == 5
+        changeSet = changes[-1]
+        expectedChanges = [
+            Change(op='add', path=('a',), value=1),
+            Change(op='add', path=('b',), value=2),
+            Change(op='add', path=('c',), value=[3, 4, 5]),
+        ]
+        assert list(changeSet) == expectedChanges
+
 
 class TestProxies:
 
