@@ -132,7 +132,7 @@ class TestUndoManager:
         with pytest.raises(AssertionError):
             proxy = um.setModel({})
 
-    def test_change_monitor(self):
+    def test_changeMonitor(self):
         changes = []
         um = UndoManager(changeMonitor=changes.append)
         proxy = um.setModel({})
