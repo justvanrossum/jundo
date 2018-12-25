@@ -134,9 +134,7 @@ class TestUndoManager:
 
     def test_change_monitor(self):
         changes = []
-        def changeMonitor(change):
-            changes.append(change)
-        um = UndoManager(changeMonitor=changeMonitor)
+        um = UndoManager(changeMonitor=changes.append)
         proxy = um.setModel({})
         with um.changeSet():
             proxy["a"] = 1
