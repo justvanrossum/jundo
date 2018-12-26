@@ -379,11 +379,11 @@ class UndoProxySequence(UndoProxyContainerBase, MutableSequence):
     def __len__(self):
         return len(self._modelObject)
 
-    def _normalizeIndex(self, index, bias=0):
+    def _normalizeIndex(self, index):
         numItems = len(self._modelObject)
         if index < 0:
             index += numItems
-        if not (0 <= index < numItems + bias):
+        if not (0 <= index < numItems):
             raise IndexError("sequence index out of range")
         return index
 
@@ -400,7 +400,10 @@ class UndoProxySequence(UndoProxyContainerBase, MutableSequence):
         self._genericDelItem(index)
 
     def insert(self, index, item):
-        index = self._normalizeIndex(index, bias=1)
+        if index >= len(self):
+            index = len(self)
+        else:
+            index = self._normalizeIndex(index)
         path = self._path + (index,)
         change = Change("add", path, item)
         invChange = Change("remove", path, None)
