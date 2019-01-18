@@ -238,7 +238,6 @@ class UndoManager:
 
 # Change Classes
 
-
 @dataclass(frozen=True)
 class Change:
 
