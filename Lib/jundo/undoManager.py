@@ -1,5 +1,6 @@
 from collections.abc import Callable, Mapping, MutableMapping, Sequence, \
                             MutableSequence, Set, MutableSet
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from functools import singledispatch
 from operator import getitem, setitem, delitem, contains
@@ -99,6 +100,7 @@ class UndoManager:
         self._modelObject = model
         return proxy
 
+    @contextmanager
     def changeSet(self, **info):
         """Returns a context manager that handles a newChangeSet/pushCurrentChangeSet
         pair conveniently.
@@ -107,7 +109,14 @@ class UndoManager:
         info dict associated with this change set. One use for this is to
         specify an action name for an undo/redo menu item.
         """
-        return ChangeSetContextManager(self, info)
+        self.newChangeSet(**info)
+        try:
+            yield
+        except:
+            self.rollbackCurrentChangeSet()
+            raise
+        else:
+            self.pushCurrentChangeSet()
 
     def newChangeSet(self, **info):
         """Prepare a new change set to record changes into. Once all changes
@@ -225,22 +234,6 @@ class UndoManager:
         if self._changeMonitor is not None:
             self._changeMonitor(invChangeSet)
         # TODO: a continuous changes monitoring hook should also be triggered here
-
-
-@dataclass
-class ChangeSetContextManager:
-
-    undoManager: UndoManager
-    info: dict
-
-    def __enter__(self):
-        self.undoManager.newChangeSet(**self.info)
-
-    def __exit__(self, type, value, traceback):
-        if type is None:
-            self.undoManager.pushCurrentChangeSet()
-        else:
-            self.undoManager.rollbackCurrentChangeSet()
 
 
 # Change Classes
