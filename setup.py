@@ -13,7 +13,7 @@ setup(
     package_dir={"": "Lib"},
     packages=find_packages("Lib"),
     install_requires=[
-        "dataclasses",
+        'dataclasses;python_version<"3.7"',
     ],
     extras_require={
         "testing": [
