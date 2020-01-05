@@ -105,7 +105,7 @@ class UndoManager:
         """Returns a context manager that handles a newChangeSet/pushCurrentChangeSet
         pair conveniently.
 
-        Keyword arguments passed to the unduManager.changeSet() call form the
+        Keyword arguments passed to the undoManager.changeSet() call form the
         info dict associated with this change set. One use for this is to
         specify an action name for an undo/redo menu item.
         """
