@@ -20,7 +20,7 @@ class _error_dict(dict):
 
 class TestUndoManager:
 
-    def test_module_docsting_example(self):
+    def test_module_docstring_example(self):
         model = [1, 2, 3, {"a": 123}]
         um = UndoManager()
         proxy = um.setModel(model)
