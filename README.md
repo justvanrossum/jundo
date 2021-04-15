@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.com/justvanrossum/jundo.svg?branch=master)](https://travis-ci.com/justvanrossum/jundo)
-
 # jundo
 
 A general purpose library to help implement undo for existing objects.
