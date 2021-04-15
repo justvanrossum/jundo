@@ -2,10 +2,16 @@
 from setuptools import setup, find_packages
 
 
+with open("README.md", encoding="utf-8") as f:
+    long_description = f.read()
+
+
 setup(
-    use_scm_version={"write_to": "Lib/jundo/_version.py"},
     name="jundo",
     description="A general purpose library to help implement undo.",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    use_scm_version={"write_to": "Lib/jundo/_version.py"},
     author="Just van Rossum",
     author_email="justvanrossum@gmail.com",
     url="https://github.com/justvanrossum/jundo",
