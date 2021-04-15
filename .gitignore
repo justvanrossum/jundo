@@ -104,3 +104,6 @@ venv.bak/
 
 # OSX Finder
 .DS_Store
+
+# setuptools_scm
+Lib/jundo/_version.py

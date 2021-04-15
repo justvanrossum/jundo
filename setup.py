@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 
 setup(
-    version="0.1",  # see also jundo.__version__
+    use_scm_version={"write_to": "Lib/jundo/_version.py"},
     name="jundo",
     description="A general purpose library to help implement undo.",
     author="Just van Rossum",
@@ -15,11 +15,7 @@ setup(
     install_requires=[
         'dataclasses;python_version<"3.7"',
     ],
-    extras_require={
-        "testing": [
-            "pytest",
-        ],
-    },
+    setup_requires=["setuptools_scm"],
     python_requires=">=3.6",
     classifiers=[
         "Development Status :: 3 - Alpha",

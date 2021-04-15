@@ -69,4 +69,7 @@ from .undoManager import UndoManager
 
 __all__ = ["UndoManager"]
 
-__version__ = "0.1"  # see also setup.py
+try:
+    from ._version import version as __version__
+except ImportError:
+    __version__ = "<unknown>"
