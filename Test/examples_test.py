@@ -6,6 +6,7 @@ import os
 examplesGlobPattern = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "Examples", "*.py")
 examplePaths = glob(examplesGlobPattern)
 
+
 @pytest.fixture(params=examplePaths)
 def examplePath(request):
     return request.param

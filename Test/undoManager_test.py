@@ -1,6 +1,26 @@
 from collections.abc import Mapping, Sequence, Set
 import pytest
-from jundo.undoManager import *
+from jundo.undoManager import (
+    Change,
+    UndoManager,
+    UndoManagerError,
+    UndoProxy,
+    UndoProxyAttributeObject,
+    UndoProxyBase,
+    UndoProxyMapping,
+    UndoProxySequence,
+    UndoProxySet,
+    addItem,
+    addNestedItem,
+    getItem,
+    getNestedItem,
+    hasItem,
+    registerUndoProxy,
+    removeItem,
+    removeNestedItem,
+    replaceItem,
+    replaceNestedItem,
+)
 
 
 class _AttributeObject:
@@ -9,8 +29,8 @@ class _AttributeObject:
         return x + 2
 
     def __repr__(self):
-        return "%s(%s)" % (self.__class__.__name__,
-               ", ".join("%s=%r" % (k, v) for k, v in self.__dict__.items()))
+        attrsRepr = ", ".join(f"{k}={v!r}" for k, v in self.__dict__.items())
+        return f"{self.__class__.__name__}({attrsRepr})"
 
 
 class _error_dict(dict):
@@ -42,14 +62,14 @@ class TestUndoManager:
         model = [1, "a", "Q"]
         um = UndoManager()
         proxy = um.setModel(model)
-        assert um.undoInfo() == None
-        assert um.redoInfo() == None
+        assert um.undoInfo() is None
+        assert um.redoInfo() is None
         with um.changeSet(title="undo action", more="any info"):
             proxy[1] = 2000
         assert um.undoInfo() == {'more': 'any info', 'title': 'undo action'}
         assert um.redoInfo() is None
         um.undo()
-        assert um.undoInfo() == None
+        assert um.undoInfo() is None
         assert um.redoInfo() == {'more': 'any info', 'title': 'undo action'}
         um.redo()
         assert um.undoInfo() == {'more': 'any info', 'title': 'undo action'}
@@ -72,7 +92,7 @@ class TestUndoManager:
     def test_nested_changeSet(self):
         model = [0, 1, 2, 3]
         um = UndoManager()
-        proxy = um.setModel(model)
+        _ = um.setModel(model)
         with um.changeSet(title="outer"):
             with pytest.raises(UndoManagerError):
                 with um.changeSet(title="inner"):
@@ -92,7 +112,7 @@ class TestUndoManager:
     def test_empty_changeSet(self):
         model = [0, 1, 2, 3]
         um = UndoManager()
-        proxy = um.setModel(model)
+        _ = um.setModel(model)
         with um.changeSet(title="test"):
             # nothing
             pass
@@ -128,9 +148,9 @@ class TestUndoManager:
 
     def test_replacing_model(self):
         um = UndoManager()
-        proxy = um.setModel({})
+        _ = um.setModel({})
         with pytest.raises(AssertionError):
-            proxy = um.setModel({})
+            _ = um.setModel({})
 
     def test_changeMonitor(self):
         changes = []
@@ -225,6 +245,14 @@ class TestProxies:
         um = UndoManager()
         proxy = um.setModel(model)
         assert proxy.someMethod(3) == 5
+
+    def test_attr_repr(self):
+        model = _AttributeObject()
+        assert repr(model) == "_AttributeObject()"
+        model.a = 123
+        assert repr(model) == "_AttributeObject(a=123)"
+        model.b = "123"
+        assert repr(model) == "_AttributeObject(a=123, b='123')"
 
 
 class TestList:
@@ -372,7 +400,7 @@ class TestDictionary:
         um.undo()
         with um.changeSet(title="dict test 4"):
             proxy["c"] = 48
-            #assert model == {"a": 1200, "c": 24}
+            # assert model == {"a": 1200, "c": 24}
         assert model == {"a": 1200, "c": 48}
         with pytest.raises(UndoManagerError):
             um.redo()
@@ -526,23 +554,23 @@ class TestGenericFunctions:
 
     def test_generic_getItem(self):
         d = {"a": 1}
-        l = [1]
+        lst = [1]
         o = _AttributeObject()
         o.foo = 1
         assert getItem(d, "a") == 1
-        assert getItem(l, 0) == 1
+        assert getItem(lst, 0) == 1
         assert getItem(o, "foo") == 1
 
     def test_generic_addItem(self):
         d = {"a": 1}
-        l = [1]
+        lst = [1]
         o = _AttributeObject()
         o.foo = 1
         addItem(d, "b", 2)
-        addItem(l, 1, 2)
+        addItem(lst, 1, 2)
         addItem(o, "bar", 2)
         assert getItem(d, "b") == 2
-        assert getItem(l, 1) == 2
+        assert getItem(lst, 1) == 2
         assert getItem(o, "bar") == 2
         with pytest.raises(AssertionError):
             addItem(d, "b", 2)
@@ -551,14 +579,14 @@ class TestGenericFunctions:
 
     def test_generic_replaceItem(self):
         d = {"a": 1}
-        l = [1]
+        lst = [1]
         o = _AttributeObject()
         o.foo = 1
         replaceItem(d, "a", 2)
-        replaceItem(l, 0, 2)
+        replaceItem(lst, 0, 2)
         replaceItem(o, "foo", 2)
         assert getItem(d, "a") == 2
-        assert getItem(l, 0) == 2
+        assert getItem(lst, 0) == 2
         assert getItem(o, "foo") == 2
         with pytest.raises(AssertionError):
             replaceItem(d, "b", 2)
@@ -567,14 +595,14 @@ class TestGenericFunctions:
 
     def test_generic_removeItem(self):
         d = {"a": 1}
-        l = [1]
+        lst = [1]
         o = _AttributeObject()
         o.foo = 1
         removeItem(d, "a")
-        removeItem(l, 0)
+        removeItem(lst, 0)
         removeItem(o, "foo")
         assert not hasItem(d, "a")
-        assert len(l) == 0
+        assert len(lst) == 0
         assert not hasItem(o, "foo")
 
     def test_getNestedItem(self):

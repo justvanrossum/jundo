@@ -7,7 +7,8 @@ from operator import getitem, setitem, delitem, contains
 import typing
 
 
-class UndoManagerError(Exception): pass
+class UndoManagerError(Exception):
+    pass
 
 
 class UndoManager:
@@ -112,7 +113,7 @@ class UndoManager:
         self.newChangeSet(**info)
         try:
             yield
-        except:
+        except Exception:
             self.rollbackCurrentChangeSet()
             raise
         else:
@@ -548,13 +549,16 @@ def getNestedItem(obj, path):
         obj = getItem(obj, pathElement)
     return obj
 
+
 def addNestedItem(obj, path, value):
     obj = getNestedItem(obj, path[:-1])
     addItem(obj, path[-1], value)
 
+
 def replaceNestedItem(obj, path, value):
     obj = getNestedItem(obj, path[:-1])
     replaceItem(obj, path[-1], value)
+
 
 def removeNestedItem(obj, path):
     obj = getNestedItem(obj, path[:-1])
@@ -573,19 +577,23 @@ def removeNestedItem(obj, path):
 def hasItem(obj, attr):
     return hasattr(obj, attr)
 
+
 @singledispatch
 def getItem(obj, attr):
     return getattr(obj, attr)
+
 
 @singledispatch
 def addItem(obj, attr, value):
     assert not hasattr(obj, attr)
     setattr(obj, attr, value)
 
+
 @singledispatch
 def replaceItem(obj, attr, value):
     assert hasattr(obj, attr)
     setattr(obj, attr, value)
+
 
 @singledispatch
 def removeItem(obj, attr):
@@ -632,5 +640,6 @@ registerUndoProxy(Callable, UndoProxyCallable)
 
 
 if __name__ == "__main__":
-    import doctest, sys
+    import doctest
+    import sys
     sys.exit(doctest.testmod().failed)

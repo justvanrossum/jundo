@@ -56,7 +56,7 @@ Examples folder for more elaborate examples.
 Sets are also supported.
 
 To support model objects that are not JSON-like, custom proxy classes can be
-registered via the `registerUndoProxy()` function. 
+registered via the `registerUndoProxy()` function.
 
 ### Acknowledgments
 

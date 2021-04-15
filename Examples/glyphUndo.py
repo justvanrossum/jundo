@@ -27,6 +27,8 @@ class Glyph:
 
 def drawGlyph(g):
     # needs DrawBot
+    from drawbot_skia.drawbot import BezierPath, drawPath, translate
+    # from drawBot import BezierPath, drawPath, translate
     bez = BezierPath()
     g.drawPoints(bez)
     drawPath(bez)
