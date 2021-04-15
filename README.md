@@ -1,3 +1,5 @@
+[![Build, Test & Deploy](https://github.com/justvanrossum/jundo/actions/workflows/ci.yml/badge.svg)](https://github.com/justvanrossum/jundo/actions/workflows/ci.yml)
+
 # jundo
 
 A general purpose library to help implement undo for existing objects.
